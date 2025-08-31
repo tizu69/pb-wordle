@@ -200,7 +200,7 @@
 					onfocus={() => (isFocused = true)}
 					onblur={() => (isFocused = false)}
 					type="text"
-					class="absolute inset-0 z-10 h-full w-full opacity-0 focus:bg-letter-done focus:opacity-100"
+					class="absolute inset-0 z-10 h-full w-full opacity-0"
 				/>
 			</div>
 		{/if}
