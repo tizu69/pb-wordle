@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+
+@theme {
+	--color-*: initial;
+	--color-text: #f8f8f8;
+	--color-letter-done: #3a6337;
+	--color-letter-partial: #7f6f29;
+	--color-letter-nope: #3a3a3c;
+	--color-border: #29292a;
+	--color-background: #121213;
+}
+
+:root {
+	@apply bg-background text-text;
+	font-size: 18px;
+}
+* {
+	@apply border-border select-none;
+}
