@@ -56,22 +56,29 @@
 		if (attempt >= curAttempt) return Array(target.length).fill('border-2');
 		const targetCodes = [...target].map((c) => c.charCodeAt(0));
 		const guessCodes = [...guess].map((c) => c.charCodeAt(0));
+		const result = Array(targetCodes.length).fill('');
 		const used = Array(targetCodes.length).fill(false);
-		return guessCodes.map((guessCode, i) => {
-			if (targetCodes[i] === guessCode) {
+		guessCodes.forEach((code, i) => {
+			if (targetCodes[i] === code) {
+				result[i] = 'bg-letter-done';
 				used[i] = true;
-				return 'bg-letter-done';
 			}
+		});
+		guessCodes.forEach((code, i) => {
+			if (result[i]) return; // greren alr
 			const foundIndex = targetCodes.findIndex(
-				(targetCode, j) => targetCode === guessCode && !used[j]
+				(targetCode, j) => targetCode === code && !used[j]
 			);
 			if (foundIndex !== -1) {
+				result[i] = 'bg-letter-partial';
 				used[foundIndex] = true;
-				return 'bg-letter-partial';
+			} else {
+				result[i] = 'bg-letter-nope';
 			}
-			return 'bg-letter-nope';
 		});
+		return result;
 	}
+
 	function isDone() {
 		return (
 			curAttempt >= allowedAttempts || word?.word === attempts[curAttempt - 1]
