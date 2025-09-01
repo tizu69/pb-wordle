@@ -60,17 +60,18 @@
 	function containsNonAscii(str: string) {
 		return /[^ -~]/.test(str);
 	}
-	function letterClasses(attempt: number): string[] {
+
+	type Correctness = 0 | 1 | 2;
+	function guessCorrectness(attempt: number): Correctness[] {
 		const target = word?.word || '';
 		const guess = attempts[attempt] || '';
-		if (attempt >= curAttempt) return Array(target.length).fill('border-2');
 		const targetCodes = [...target].map((c) => c.charCodeAt(0));
 		const guessCodes = [...guess].map((c) => c.charCodeAt(0));
-		const result = Array(targetCodes.length).fill('');
+		const result = Array(targetCodes.length).fill(0);
 		const used = Array(targetCodes.length).fill(false);
 		guessCodes.forEach((code, i) => {
 			if (targetCodes[i] === code) {
-				result[i] = 'bg-letter-done';
+				result[i] = 2;
 				used[i] = true;
 			}
 		});
@@ -80,13 +81,26 @@
 				(targetCode, j) => targetCode === code && !used[j]
 			);
 			if (foundIndex !== -1) {
-				result[i] = 'bg-letter-partial';
+				result[i] = 1;
 				used[foundIndex] = true;
 			} else {
-				result[i] = 'bg-letter-nope';
+				result[i] = 0;
 			}
 		});
 		return result;
+	}
+	function guessCorrectnessClasses(attempt: number): string[] {
+		if (attempt >= curAttempt) return Array(letters).fill('border-2');
+		return guessCorrectness(attempt).map((c) => {
+			switch (c) {
+				case 0:
+					return 'bg-letter-nope';
+				case 1:
+					return 'bg-letter-partial';
+				case 2:
+					return 'bg-letter-done';
+			}
+		});
 	}
 </script>
 
@@ -164,7 +178,7 @@
 				style="grid-template-columns: repeat({letters}, minmax(0, 1fr))"
 			>
 				{#each { length: allowedAttempts } as _, attempt}
-					{@const letterClass = letterClasses(attempt)}
+					{@const letterClass = guessCorrectnessClasses(attempt)}
 					{#each { length: letters } as _, char}
 						{@const letter = attempts?.[attempt]?.[char] || ''}
 						<div
