@@ -39,6 +39,9 @@
 	let showHint = $derived(hintRequested || category?.mustHint || false);
 	let letters = $derived(word?.word.length || 0);
 	let allowedAttempts = $derived(Math.ceil(letters * 1.2));
+	let isDone = $derived(
+		curAttempt >= allowedAttempts || word?.word === attempts[curAttempt - 1]
+	);
 
 	function escapeRegex(str: string) {
 		return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -78,12 +81,6 @@
 		});
 		return result;
 	}
-
-	function isDone() {
-		return (
-			curAttempt >= allowedAttempts || word?.word === attempts[curAttempt - 1]
-		);
-	}
 </script>
 
 <Toast />
@@ -105,13 +102,13 @@
 	{/await}
 
 	<div class="flex gap-2">
-		{#if !showHint}
+		{#if !showHint && word?.hint}
 			<button onclick={() => (hintRequested = true)} class="underline">
 				Hint
 			</button>
 		{/if}
 		<button onclick={regenWord} class="underline">
-			{isDone() ? 'Next' : 'Skip'}
+			{isDone ? 'Next' : 'Skip'}
 		</button>
 	</div>
 </header>
@@ -121,7 +118,7 @@
 		<p class="pt-12">Please wait...</p>
 	{:then}
 		{#if word}
-			{#if containsNonAscii(word.word) && !isDone()}
+			{#if containsNonAscii(word.word) && !isDone}
 				<div
 					class={[
 						'mb-4 grid grid-cols-[auto_1fr] gap-2 rounded-xl',
@@ -149,7 +146,7 @@
 
 			{#if !isFocused}
 				<p class="text-xs font-bold">Click the grid to start typing!</p>
-			{:else if isDone()}
+			{:else if isDone}
 				<p class="text-xs">shift-enter for next!</p>
 			{:else}
 				<p class="text-xs">enter to submit, shift-enter to skip</p>
@@ -183,7 +180,7 @@
 							e.currentTarget.value = '';
 							return regenWord();
 						}
-						if (isDone()) return;
+						if (isDone) return;
 
 						if (attempts[curAttempt]?.length != letters)
 							return toast(`Not enough letters!`);
@@ -198,7 +195,7 @@
 					}}
 					oninput={(e) => {
 						e.preventDefault();
-						if (isDone()) return;
+						if (isDone) return;
 						attempts[curAttempt] = e.currentTarget.value
 							.toUpperCase()
 							.substring(0, letters);
