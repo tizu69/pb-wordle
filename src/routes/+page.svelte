@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/state';
 	import pb, { type CollCategory, type CollWord } from '$lib/pocketbase';
 	import Toast, { toast } from '$lib/Toast.svelte';
 	import { ClientResponseError } from 'pocketbase';
@@ -10,7 +11,9 @@
 		.collection('categories')
 		.getFullList({ sort: '-created' });
 	categories.then((cats) => {
-		category = cats[0];
+		if (page.url.searchParams.has('c'))
+			category = cats.find((c) => c.name === page.url.searchParams.get('c'));
+		if (!category) category = cats[0];
 	});
 
 	let wordPromise = $state(Promise.resolve());
