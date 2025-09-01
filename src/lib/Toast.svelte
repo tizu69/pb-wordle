@@ -6,10 +6,12 @@
 	let msgs = $state<string[]>([]);
 	toast = (msg: string) => msgs.push(msg);
 
+	let timeout: number | null;
 	$effect(() => {
-		if (msgs.length > 0)
-			setTimeout(() => {
+		if (msgs.length > 0 && !timeout)
+			timeout = setTimeout(() => {
 				msgs.shift();
+				timeout = null;
 			}, 3000);
 	});
 </script>
