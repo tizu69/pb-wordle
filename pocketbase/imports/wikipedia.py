@@ -9,7 +9,10 @@ with gzip.open("wikipedia.gz", "rt") as f:
     lines = [
         {"word": line.strip().replace("_", " ")}
         for line in rawlines
-        if len(line.strip()) > 0 and line.strip().isascii() and random.random() < 0.003
+        if len(line.strip()) > 0
+        and len(line.strip()) < 16
+        and line.strip().isascii()
+        and random.random() < 0.003
     ]
     lines.pop(0)
     print("done processing (stripped some), out:", len(lines), "/", len(rawlines) - 1)
