@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"encoding/json"
 	"log"
 	"log/slog"
@@ -86,8 +85,8 @@ func importCategoriesFromJson(app *pocketbase.PocketBase) {
 			continue
 		}
 
-		if _, err := app.FindFirstRecordByData("categories", "name",
-			imprt.Name); err == sql.ErrNoRows {
+		if r, _ := app.FindFirstRecordByData("categories", "name",
+			imprt.Name); r == nil {
 			slog.Info("Importing category", "file", f.Name())
 			coll, _ := app.FindCollectionByNameOrId("categories")
 			recordCat := core.NewRecord(coll)
