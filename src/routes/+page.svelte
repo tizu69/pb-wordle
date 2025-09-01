@@ -99,7 +99,7 @@
 			value={category?.id}
 		>
 			{#each cats as cat}
-				<option value={cat.id}>{cat.name}dle</option>
+				<option value={cat.id}>{cat.name}</option>
 			{/each}
 		</select>
 	{/await}
