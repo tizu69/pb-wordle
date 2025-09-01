@@ -5,6 +5,7 @@ export interface CollCategory {
 	id: CollID;
 	name: string;
 	mustHint: boolean;
+	mustPresent: boolean;
 }
 export interface CollWord {
 	id: CollID;

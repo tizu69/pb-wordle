@@ -59,9 +59,10 @@ func main() {
 }
 
 type CollectionImport struct {
-	Name     string `json:"name"`
-	MustHint bool   `json:"mustHint"`
-	Words    []struct {
+	Name        string `json:"name"`
+	MustHint    bool   `json:"mustHint"`
+	MustPresent bool   `json:"mustPresent"`
+	Words       []struct {
 		Word     string `json:"word"`
 		Hint     string `json:"hint"`
 		HintLong string `json:"hintLong"`
@@ -92,6 +93,7 @@ func importCategoriesFromJson(app *pocketbase.PocketBase) {
 			recordCat := core.NewRecord(coll)
 			recordCat.Set("name", imprt.Name)
 			recordCat.Set("mustHint", imprt.MustHint)
+			recordCat.Set("mustPresent", imprt.MustPresent)
 			if err := app.Save(recordCat); err != nil {
 				slog.Warn("Failed to save category", "err", err)
 				continue

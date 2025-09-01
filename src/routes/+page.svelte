@@ -1,6 +1,7 @@
 <script lang="ts">
 	import pb, { type CollCategory, type CollWord } from '$lib/pocketbase';
 	import Toast, { toast } from '$lib/Toast.svelte';
+	import { ClientResponseError } from 'pocketbase';
 
 	let category = $state<CollCategory>();
 	let word = $state<CollWord>();
@@ -173,7 +174,7 @@
 
 				<input
 					autofocus
-					onkeypress={(e) => {
+					onkeypress={async (e) => {
 						if (e.key != 'Enter') return;
 
 						if (e.shiftKey) {
@@ -185,11 +186,24 @@
 						if (attempts[curAttempt]?.length != letters)
 							return toast(`Not enough letters!`);
 
-						e.currentTarget.value = '';
+						const el = e.currentTarget;
+						const attempt = attempts[curAttempt];
+						if (category?.mustPresent)
+							try {
+								await pb.collection('words').getFirstListItem(
+									pb.filter(`category = {:c} && word:lower = {:w}`, {
+										c: category.id,
+										w: attempt.toLowerCase()
+									})
+								);
+							} catch (_err) {
+								const err = _err as ClientResponseError;
+								if (err?.status == 404) return toast('Not in word list!');
+							}
+						el.value = '';
 						curAttempt++;
 
-						if (attempts[curAttempt - 1] === word?.word)
-							return toast('You won! Great job!! :3');
+						if (attempt === word?.word) return toast('You won! Great job!! :3');
 						if (curAttempt >= allowedAttempts)
 							return toast(word?.word || '???');
 					}}

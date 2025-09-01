@@ -1,6 +1,7 @@
 {
 	"name": "DiscordTagdle",
 	"mustHint": true,
+	"mustPresent": false,
 	"_credit": "https://tags.mgcounts.com/",
 	"words": [
 		{
