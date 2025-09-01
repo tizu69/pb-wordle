@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import pb, { type CollCategory, type CollWord } from '$lib/pocketbase';
 	import Toast, { toast } from '$lib/Toast.svelte';
@@ -11,8 +12,10 @@
 		.collection('categories')
 		.getFullList({ sort: '-created' });
 	categories.then((cats) => {
-		if (page.url.searchParams.has('c'))
-			category = cats.find((c) => c.name === page.url.searchParams.get('c'));
+		if (page.url.searchParams.has('c')) {
+			const v = page.url.searchParams.get('c');
+			category = cats.find((c) => c.name === v || c.id === v);
+		}
 		if (!category) category = cats[0];
 	});
 
@@ -23,7 +26,7 @@
 		curAttempt = 0;
 		wordPromise = pb
 			.collection('words')
-			.getFirstListItem('', {
+			.getFirstListItem(pb.filter(`category = {:c}`, { c: category?.id }), {
 				sort: '@random'
 			})
 			.then((w) => {
